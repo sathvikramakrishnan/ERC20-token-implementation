@@ -80,7 +80,7 @@ contract MyToken {
             );
         }
         _transfer(_from, _to, _value);
-        approve(spender, currentAllowance - _value);
+        _approve(_from, spender, currentAllowance - _value);
         return true;
     }
 
@@ -99,19 +99,27 @@ contract MyToken {
         uint256 _value
     ) public returns (bool success) {
         address owner = msg.sender;
-        if (_spender == owner) {
-            revert MyToken__ApproverIsSpender(owner, _spender);
+        _approve(owner, _spender, _value);
+
+        return true;
+    }
+
+    function _approve(
+        address _owner,
+        address _spender,
+        uint256 _value
+    ) internal {
+        if (_spender == _owner) {
+            revert MyToken__ApproverIsSpender(_owner, _spender);
         }
         if (_spender == address(0)) {
             revert MyToken__InvalidSpender(address(0));
         }
-        if (owner == address(0)) {
+        if (_owner == address(0)) {
             revert MyToken__InvalidApprover(address(0));
         }
-        s_allowed[owner][_spender] = _value;
-        emit Approval(owner, _spender, _value);
-
-        return true;
+        s_allowed[_owner][_spender] = _value;
+        emit Approval(_owner, _spender, _value);
     }
 
     function allowance(
