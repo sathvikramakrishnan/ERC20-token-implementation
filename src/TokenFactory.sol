@@ -4,9 +4,6 @@ pragma solidity ^0.8.18;
 
 import {MyToken} from "./MyToken.sol";
 
-// 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4
-// 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2
-
 contract MyTokenFactory {
     event TokenCreated(address indexed creator, address tokenAddress);
 
@@ -34,11 +31,10 @@ contract MyTokenFactory {
 
     function approve(
         MyToken _token,
-        address _owner,
         address _spender,
         uint256 _value
     ) external {
-        _token.approve(_owner, _spender, _value);
+        _token.approve(_spender, _value);
     }
 
     function transfer(MyToken _token, address _to, uint256 _value) external {

@@ -10,4 +10,4 @@ To simplify token deployment, use a factory contract `TokenFactory.sol` that dep
 ## Issues
 1. msg.sender issue in transferFrom
 2. msg.sender issue in transfer
-3. approve() - check condition that _owner is msg.sender
+3. msg.sender issue in approve
