@@ -20,11 +20,10 @@ contract MyToken {
     /**Variables */
     string public name;
     string public symbol;
+    mapping(address => mapping(address => uint256)) public s_allowed;
 
-    uint256 internal s_totalSupply;
-
+    uint256 private s_totalSupply;
     mapping(address => uint256) private s_balances;
-    mapping(address => mapping(address => uint256)) private s_allowed;
 
     /**Events */
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -47,7 +46,7 @@ contract MyToken {
         return s_totalSupply;
     }
 
-    function balanceOf(address _owner) public view returns (uint256) {
+    function balanceOf(address _owner) public view returns (uint256 balance) {
         return s_balances[_owner];
     }
 
@@ -80,6 +79,7 @@ contract MyToken {
             );
         }
         _transfer(_from, _to, _value);
+        approve(_from, spender, currentAllowance - _value);
         return true;
     }
 
@@ -94,21 +94,21 @@ contract MyToken {
     }
 
     function approve(
+        address _owner,
         address _spender,
         uint256 _value
     ) public returns (bool success) {
-        address owner = msg.sender;
-        if (_spender == owner) {
-            revert MyToken__ApproverIsSpender(owner, _spender);
+        if (_spender == _owner) {
+            revert MyToken__ApproverIsSpender(_owner, _spender);
         }
         if (_spender == address(0)) {
             revert MyToken__InvalidSpender(address(0));
         }
-        if (owner == address(0)) {
+        if (_owner == address(0)) {
             revert MyToken__InvalidApprover(address(0));
         }
-        s_allowed[owner][_spender] = _value;
-        emit Approval(owner, _spender, _value);
+        s_allowed[_owner][_spender] = _value;
+        emit Approval(_owner, _spender, _value);
 
         return true;
     }
@@ -116,7 +116,7 @@ contract MyToken {
     function allowance(
         address _owner,
         address _spender
-    ) public view returns (uint256) {
+    ) public view returns (uint256 remaining) {
         return s_allowed[_owner][_spender];
     }
 
