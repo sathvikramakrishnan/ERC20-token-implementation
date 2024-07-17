@@ -23,6 +23,7 @@ contract MyToken {
 
     uint256 internal s_totalSupply;
 
+    address private s_msgSender;
     mapping(address => uint256) private s_balances;
     mapping(address => mapping(address => uint256)) private s_allowed;
 
@@ -55,7 +56,7 @@ contract MyToken {
         address _to,
         uint256 _value
     ) public returns (bool success) {
-        address from = msg.sender;
+        address from = getSender();
         _transfer(from, _to, _value);
         return true;
     }
@@ -65,7 +66,7 @@ contract MyToken {
         address _to,
         uint256 _value
     ) public returns (bool success) {
-        address spender = msg.sender;
+        address spender = getSender();
         if (spender == _from) {
             revert MyToken__ApproverIsSpender(_from, spender);
         }
@@ -98,7 +99,7 @@ contract MyToken {
         address _spender,
         uint256 _value
     ) public returns (bool success) {
-        address owner = msg.sender;
+        address owner = getSender();
         _approve(owner, _spender, _value);
 
         return true;
@@ -171,5 +172,16 @@ contract MyToken {
         }
 
         emit Transfer(_from, _to, _value);
+    }
+
+    function setSender(address _sender) external {
+        s_msgSender = _sender;
+    }
+
+    function getSender() internal view returns (address) {
+        if (s_msgSender == address(0)) {
+            return msg.sender;
+        }
+        return s_msgSender;
     }
 }

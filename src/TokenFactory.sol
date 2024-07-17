@@ -34,10 +34,12 @@ contract MyTokenFactory {
         address _spender,
         uint256 _value
     ) external {
+        _token.setSender(msg.sender);
         _token.approve(_spender, _value);
     }
 
     function transfer(MyToken _token, address _to, uint256 _value) external {
+        _token.setSender(msg.sender);
         _token.transfer(_to, _value);
     }
 
@@ -47,6 +49,7 @@ contract MyTokenFactory {
         address _to,
         uint256 _value
     ) external {
+        _token.setSender(msg.sender);
         _token.transferFrom(_from, _to, _value);
     }
 
