@@ -5,12 +5,18 @@ pragma solidity ^0.8.18;
 import {MyToken} from "./MyToken.sol";
 
 contract MyTokenFactory {
-    event TokenCreated(address indexed creator, address tokenAddress);
+    error TokenFactory__TokenSymbolAlreadyExits(string symbol);
 
     MyToken[] private s_tokens;
     mapping(string => MyToken) private s_symbolToToken;
 
+    event TokenCreated(address indexed creator, address tokenAddress);
+
     function createTokens(string memory _name, string memory _symbol) public {
+        if (address(s_symbolToToken[_symbol]) != address(0)) {
+            revert TokenFactory__TokenSymbolAlreadyExits(_symbol);
+        }
+
         MyToken token = new MyToken(_name, _symbol);
         s_tokens.push(token);
         s_symbolToToken[_symbol] = token;
